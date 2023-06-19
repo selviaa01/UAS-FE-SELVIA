@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendataan Sekolah Selvia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 10 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        /* Tambahkan gaya berikut */
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 40px;
+            padding: 10px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    
+        label {
+            font-weight: bold;
+        }
+    
+        input[type="text"],
+        button {
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+    
+        button {
+            background-color: black;
+            color: #fff;
+            cursor: pointer;
+        }
+        form button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #450bf2;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: medium;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        table {
+            width: 100%;
+            background-color: #d3e7f8;
+            padding: 5px;
+            border-collapse: collapse;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 5px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #1410e1;
+            color: #fcfcfc;
+            padding: 5px;
+        }
+
+        td button {
+            padding: 5px 10px;
+            background-color: #f44336;
+            border: none;
+            color: #fefeff;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        td button:last-child {
+            margin-right: 0;
+        }
+    </style>
+
+</head>
+
+
+    <body>
+        <h1>🏫PENDATAAN SEKOLAH🏫</h1>
+        <form>
+            <label for="nama_sekolah">Nama Sekolah :</label><br>
+            <input type="text" id="nama_sekolah" name="nama_sekolah"><br>
+
+            <label for="kepala_sekolah">Kepala Sekolah :</label><br>
+            <input type="text" id="kepala_sekolah" name="kepala_sekolah"><br>
+
+            <label for="akreditasi">Akreditasi :</label><br>
+            <input type="text" id="akreditasi" name="akreditasi"><br>
+
+            <label for="tahun_berdiri">Tahun Berdiri :</label><br>
+            <input type="text" id="tahun_berdiri" name="tahun_berdiri"><br>
+
+            <label for="jumlah_siswa">jumlah Siswa :</label><br>
+            <input type="text" id="jumlah_siswa" name="jumlah_siswa"><br>
+
+
+            <button type="button" onclick="saveData()" id="button">Simpan</button>
+
+
+</form>
+
+<h1>🏫DAFTAR SEKOLAH🏫</h1>
+<table>
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Nama Sekolah</th>
+            <th>Kepala Sekolah</th>
+            <th>Akreditasi</th>
+            <th>Tahun Berdiri</th>
+            <th>Jumlah Siswa</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="schools"></tbody>
+</table>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+    const saveData = async () => {
+        let nama_sekolahForm = document.getElementById("nama_sekolah").value;
+        let kepala_sekolahForm = document.getElementById("kepala_sekolah").value;
+        let akreditasiForm = document.getElementById("akreditasi").value;
+        let tahun_berdiriForm = document.getElementById("tahun_berdiri").value;
+        let jumlah_siswaForm = document.getElementById("jumlah_siswa").value;
+        await axios.post(' http://103.163.110.11:3031/schools', {
+            nama_sekolah: nama_sekolahForm,
+            kepala_sekolah: kepala_sekolahForm,
+            akreditasi: akreditasiForm,
+            tahun_berdiri: tahun_berdiriForm,
+            jumlah_siswa: jumlah_siswaForm
+        })
+            .then((response) => {
+                alert('Data berhasil disimpan!');
+                getSchools();
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    }
+
+    const getSchools = async () => {
+        await axios.get('http://103.163.110.11:3031/schools')
+            .then((response) => {
+                let bucket = '';
+                let schools = response.data;
+                schools.forEach((school, i) => {
+                    bucket += `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${school.nama_sekolah}</td>
+                                <td>${school.kepala_sekolah}</td>
+                                <td>${school.akreditasi}</td>
+                                <td>${school.tahun_berdiri}</td>
+                                <td>${school.jumlah_siswa}</td>
+                                <td>
+                                    <button onclick="editData('${school.id}','${school.nama_sekolah}','${school.kepala_sekolah}','${school.akreditasi}','${school.tahun_berdiri}','${school.jumlah_siswa}')">Edit</button>
+                                    <button onclick="deleteData(${school.id})">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                });
+                document.getElementById('schools').innerHTML = bucket;
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    }
+    getSchools();
+
+    const deleteData = async (id) => {
+        await axios.delete(`http://103.163.110.11:3031/schools/${id}`)
+            .then((response) => {
+                alert('Data berhasil dihapus');
+                getSchools();
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    }
+
+    const editData = (id, nama_sekolah, kepala_sekolah, akreditasi, tahun_berdiri, jumlah_siswa) => {
+        document.getElementById('nama_sekolah').value = nama_sekolah;
+        document.getElementById('kepala_sekolah').value = kepala_sekolah;
+        document.getElementById('akreditasi').value = akreditasi;
+        document.getElementById('tahun_berdiri').value = tahun_berdiri;
+        document.getElementById('jumlah_siswa').value = jumlah_siswa;
+        document.getElementById('button').innerText = 'Update';
+        document.getElementById('button').setAttribute('onclick', `updateData(${id})`);
+    }
+
+    const updateData = async (id) => {
+        let nama_sekolahForm = document.getElementById("nama_sekolah").value;
+        let kepala_sekolahForm = document.getElementById("kepala_sekolah").value;
+        let akreditasiForm = document.getElementById("akreditasi").value;
+        let tahun_berdiriForm = document.getElementById("tahun_berdiri").value;
+        let jumlah_siswaForm = document.getElementById("jumlah_siswa").value;
+        await axios
+            .patch(`http://103.163.110.11:3031/schools/${id}`, {
+                nama_sekolah: nama_sekolahForm,
+                kepala_sekolah: kepala_sekolahForm,
+                akreditasi: akreditasiForm,
+                tahun_berdiri: tahun_berdiriForm,
+                jumlah_siswa: jumlah_siswaForm
+            })
+            .then((response) => {
+                alert("Data berhasil diubah");
+                getSchools();
+                resetForm();
+            })
+            .catch((error) => {
+                console.log(error.message);
+            });
+    };
+
+    const resetForm = () => {
+        document.getElementById("nama_sekolah").value = "";
+        document.getElementById("kepala_sekolah").value = "";
+        document.getElementById("akreditasi").value = "";
+        document.getElementById("tahun_berdiri").value = "";
+        document.getElementById("jumlah_siswa").value = "";
+        document.getElementById("button").innerText = "Save";
+        document.getElementById("button").setAttribute("onclick", "saveData()");
+    };
+
+</script>
+</body>
+
+</html>
